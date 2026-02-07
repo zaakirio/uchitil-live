@@ -1,0 +1,48 @@
+{
+  "name": "Quick Practice Session",
+  "description": "Short daily or frequent tutoring practice session focusing on review and new material.",
+  "sections": [
+    {
+      "title": "Vocabulary Learned",
+      "instruction": "New words or phrases introduced in this session with translations.",
+      "format": "list",
+      "item_format": "| **Word/Phrase** | **Translation/Definition** |\n| --- | --- |"
+    },
+    {
+      "title": "Grammar Points",
+      "instruction": "Grammar rules or structures reviewed or introduced.",
+      "format": "list"
+    },
+    {
+      "title": "Pronunciation Notes",
+      "instruction": "Pronunciation tips or corrections from the tutor.",
+      "format": "list"
+    },
+    {
+      "title": "Conversation Topics",
+      "instruction": "Topics discussed or practiced during the session.",
+      "format": "paragraph"
+    },
+    {
+      "title": "Corrections Made",
+      "instruction": "Errors corrected by the tutor with the correct form.",
+      "format": "list",
+      "item_format": "| **Error** | **Correction** |\n| --- | --- |"
+    },
+    {
+      "title": "Key Phrases",
+      "instruction": "Important phrases to remember from this session.",
+      "format": "list"
+    },
+    {
+      "title": "Homework",
+      "instruction": "Practice tasks or review assignments.",
+      "format": "list"
+    },
+    {
+      "title": "Progress Notes",
+      "instruction": "Quick notes on progress and what to focus on next.",
+      "format": "paragraph"
+    }
+  ]
+}

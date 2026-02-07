@@ -1,0 +1,52 @@
+{
+  "name": "Structured Lesson Review",
+  "description": "Detailed lesson review template for tracking progress across tutoring sessions.",
+  "sections": [
+    {
+      "title": "Vocabulary Learned",
+      "instruction": "All new vocabulary with translations, example sentences, and difficulty level.",
+      "format": "list",
+      "item_format": "| **Word/Phrase** | **Translation** | **Example** | **Difficulty** |\n| --- | --- | --- | --- |"
+    },
+    {
+      "title": "Grammar Points",
+      "instruction": "Grammar topics covered with rules, examples, and exceptions noted.",
+      "format": "list",
+      "item_format": "| **Grammar Rule** | **Example** | **Notes** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Pronunciation Notes",
+      "instruction": "Pronunciation corrections with phonetic guidance where possible.",
+      "format": "list",
+      "item_format": "| **Word/Sound** | **Correction** | **Tip** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Conversation Topics",
+      "instruction": "Summary of conversation scenarios practiced and fluency observations.",
+      "format": "paragraph"
+    },
+    {
+      "title": "Corrections Made",
+      "instruction": "Detailed error corrections with explanations and correct forms.",
+      "format": "list",
+      "item_format": "| **Error** | **Correction** | **Rule/Explanation** | **Timestamp** |\n| --- | --- | --- | --- |"
+    },
+    {
+      "title": "Key Phrases",
+      "instruction": "Important phrases and expressions to memorize, with context of use.",
+      "format": "list",
+      "item_format": "| **Phrase** | **Meaning** | **Context** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Homework",
+      "instruction": "Assigned tasks with due dates and priority.",
+      "format": "list",
+      "item_format": "| **Task** | **Due Date** | **Priority** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Progress Notes",
+      "instruction": "Overall progress since last session, strengths, and areas needing work.",
+      "format": "paragraph"
+    }
+  ]
+}

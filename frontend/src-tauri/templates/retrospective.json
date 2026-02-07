@@ -1,0 +1,50 @@
+{
+  "name": "Learning Retrospective",
+  "description": "Retrospective template for reviewing learning progress and adjusting study approach.",
+  "sections": [
+    {
+      "title": "Vocabulary Learned",
+      "instruction": "Review of vocabulary retention — words mastered vs. words needing more practice.",
+      "format": "list",
+      "item_format": "| **Word/Phrase** | **Status (Mastered/Review)** |\n| --- | --- |"
+    },
+    {
+      "title": "Grammar Points",
+      "instruction": "Grammar concepts that are solid vs. those needing reinforcement.",
+      "format": "list",
+      "item_format": "| **Grammar Point** | **Confidence Level** | **Notes** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Pronunciation Notes",
+      "instruction": "Pronunciation areas that have improved and areas still challenging.",
+      "format": "list"
+    },
+    {
+      "title": "Conversation Topics",
+      "instruction": "Topics where the student felt comfortable vs. topics that were difficult.",
+      "format": "paragraph"
+    },
+    {
+      "title": "Corrections Made",
+      "instruction": "Recurring errors and patterns in mistakes to focus on.",
+      "format": "list",
+      "item_format": "| **Error Pattern** | **Frequency** | **Suggested Focus** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Key Phrases",
+      "instruction": "Most useful phrases learned and how well they are retained.",
+      "format": "list"
+    },
+    {
+      "title": "Homework",
+      "instruction": "Homework completion status and effectiveness of practice tasks.",
+      "format": "list",
+      "item_format": "| **Task** | **Completed** | **Effectiveness** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Progress Notes",
+      "instruction": "Overall assessment of learning trajectory, goals for next period, and study strategy adjustments.",
+      "format": "paragraph"
+    }
+  ]
+}

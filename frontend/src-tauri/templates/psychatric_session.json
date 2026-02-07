@@ -1,0 +1,52 @@
+{
+  "name": "Intensive Language Session (Detailed)",
+  "description": "Comprehensive template for intensive or longer tutoring sessions with detailed tracking.",
+  "sections": [
+    {
+      "title": "Vocabulary Learned",
+      "instruction": "Complete vocabulary list with translations, part of speech, and example sentences.",
+      "format": "list",
+      "item_format": "| **Word/Phrase** | **Part of Speech** | **Translation** | **Example Sentence** |\n| --- | --- | --- | --- |"
+    },
+    {
+      "title": "Grammar Points",
+      "instruction": "Detailed grammar rules with explanations, conjugation tables, or pattern descriptions.",
+      "format": "list",
+      "item_format": "| **Topic** | **Rule** | **Example** | **Exceptions** |\n| --- | --- | --- | --- |"
+    },
+    {
+      "title": "Pronunciation Notes",
+      "instruction": "Pronunciation guidance with phonetic transcription and audio reference tips.",
+      "format": "list",
+      "item_format": "| **Sound/Word** | **Issue** | **Correct Pronunciation** | **Tip** |\n| --- | --- | --- | --- |"
+    },
+    {
+      "title": "Conversation Topics",
+      "instruction": "Detailed summary of all conversation practice including role-play scenarios and real-world topics.",
+      "format": "paragraph"
+    },
+    {
+      "title": "Corrections Made",
+      "instruction": "All corrections with original error, correct form, grammatical explanation, and category.",
+      "format": "list",
+      "item_format": "| **Error** | **Correction** | **Category** | **Explanation** |\n| --- | --- | --- | --- |"
+    },
+    {
+      "title": "Key Phrases",
+      "instruction": "Essential phrases organized by topic or situation, with usage notes.",
+      "format": "list",
+      "item_format": "| **Phrase** | **Meaning** | **Situation** | **Formality Level** |\n| --- | --- | --- | --- |"
+    },
+    {
+      "title": "Homework",
+      "instruction": "Detailed homework assignments with descriptions, resources, and expected outcomes.",
+      "format": "list",
+      "item_format": "| **Task** | **Description** | **Resources** | **Due Date** |\n| --- | --- | --- | --- |"
+    },
+    {
+      "title": "Progress Notes",
+      "instruction": "Comprehensive progress assessment covering fluency, accuracy, confidence, and recommended focus areas.",
+      "format": "paragraph"
+    }
+  ]
+}

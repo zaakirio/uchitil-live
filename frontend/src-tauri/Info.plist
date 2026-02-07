@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Uchitil Live needs microphone access to record your voice during tutoring sessions.</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>Uchitil Live needs screen recording permission to capture your tutor's audio from apps like Preply, iTalki, and ClassIn.</string>
+    <key>NSAudioCaptureUsageDescription</key>
+    <string>Uchitil Live needs audio capture permission to record system audio from your tutoring platform.</string>
+    <key>com.apple.security.device.audio-input</key>
+    <true/>
+</dict>
+</plist>

@@ -1,0 +1,48 @@
+{
+  "name": "Standard Tutoring Session",
+  "description": "A standard template for language tutoring sessions, focusing on learning outcomes and practice.",
+  "sections": [
+    {
+      "title": "Vocabulary Learned",
+      "instruction": "List all new words and phrases introduced during the session, with translations or definitions if apparent from context.",
+      "format": "list",
+      "item_format": "| **Word/Phrase** | **Translation/Definition** | **Example Usage** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Grammar Points",
+      "instruction": "Summarize the grammar rules, structures, or patterns covered during the session.",
+      "format": "list"
+    },
+    {
+      "title": "Pronunciation Notes",
+      "instruction": "List pronunciation corrections, tips, and guidance given by the tutor.",
+      "format": "list"
+    },
+    {
+      "title": "Conversation Topics",
+      "instruction": "Describe the conversation topics and scenarios that were practiced.",
+      "format": "paragraph"
+    },
+    {
+      "title": "Corrections Made",
+      "instruction": "List errors or mistakes corrected by the tutor, with the correct form.",
+      "format": "list",
+      "item_format": "| **Error** | **Correction** | **Explanation** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Key Phrases",
+      "instruction": "List important phrases worth remembering for study and review.",
+      "format": "list"
+    },
+    {
+      "title": "Homework",
+      "instruction": "List any homework, practice tasks, or study assignments given by the tutor.",
+      "format": "list"
+    },
+    {
+      "title": "Progress Notes",
+      "instruction": "Summarize overall progress observations and areas for improvement.",
+      "format": "paragraph"
+    }
+  ]
+}

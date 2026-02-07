@@ -1,0 +1,48 @@
+{
+  "name": "Conversation Practice Session",
+  "description": "Template focused on conversational practice, emphasizing real-world communication skills.",
+  "sections": [
+    {
+      "title": "Vocabulary Learned",
+      "instruction": "New conversational vocabulary and idiomatic expressions encountered.",
+      "format": "list",
+      "item_format": "| **Expression** | **Meaning** | **Context** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Grammar Points",
+      "instruction": "Grammar patterns that came up naturally during conversation practice.",
+      "format": "list"
+    },
+    {
+      "title": "Pronunciation Notes",
+      "instruction": "Pronunciation feedback received during conversation, including intonation and rhythm.",
+      "format": "list"
+    },
+    {
+      "title": "Conversation Topics",
+      "instruction": "Topics discussed, scenarios practiced, and how well the student navigated each.",
+      "format": "paragraph"
+    },
+    {
+      "title": "Corrections Made",
+      "instruction": "Real-time corrections made during conversation with correct alternatives.",
+      "format": "list",
+      "item_format": "| **What Was Said** | **Correct Form** | **Context** |\n| --- | --- | --- |"
+    },
+    {
+      "title": "Key Phrases",
+      "instruction": "Useful conversational phrases, fillers, and transition words practiced.",
+      "format": "list"
+    },
+    {
+      "title": "Homework",
+      "instruction": "Conversation practice tasks or topics to prepare for next session.",
+      "format": "list"
+    },
+    {
+      "title": "Progress Notes",
+      "instruction": "Notes on conversational fluency, confidence level, and communication effectiveness.",
+      "format": "paragraph"
+    }
+  ]
+}

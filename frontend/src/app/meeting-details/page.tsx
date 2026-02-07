@@ -1,0 +1,389 @@
+"use client"
+import { useSidebar } from "@/components/Sidebar/SidebarProvider";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { Transcript, Summary } from "@/types";
+import PageContent from "./page-content";
+import { useRouter, useSearchParams } from "next/navigation";
+import Analytics from "@/lib/analytics";
+import { invoke } from "@tauri-apps/api/core";
+import { LoaderIcon } from "lucide-react";
+import { useConfig } from "@/contexts/ConfigContext";
+import { usePaginatedTranscripts } from "@/hooks/usePaginatedTranscripts";
+
+interface SessionDetailsResponse {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  transcripts: Transcript[];
+}
+
+function SessionDetailsContent() {
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get('id');
+  const source = searchParams.get('source'); // Check if navigated from recording
+  const { setCurrentSession, refetchSessions, stopSummaryPolling } = useSidebar();
+  const { isAutoSummary } = useConfig(); // Get auto-summary toggle state
+  const router = useRouter();
+  const [sessionDetails, setSessionDetails] = useState<SessionDetailsResponse | null>(null);
+  const [sessionSummary, setSessionSummary] = useState<Summary | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [shouldAutoGenerate, setShouldAutoGenerate] = useState<boolean>(false);
+  const [hasCheckedAutoGen, setHasCheckedAutoGen] = useState<boolean>(false);
+
+  // Use pagination hook for efficient transcript loading
+  const {
+    metadata,
+    segments,
+    transcripts,
+    isLoading: isLoadingTranscripts,
+    isLoadingMore,
+    hasMore,
+    totalCount,
+    loadedCount,
+    loadMore,
+    error: transcriptError,
+  } = usePaginatedTranscripts({ sessionId: sessionId || '' });
+
+  // Check if gemma3:1b model is available in Ollama
+  const checkForGemmaModel = useCallback(async (): Promise<boolean> => {
+    try {
+      const models = await invoke('get_ollama_models', { endpoint: null }) as any[];
+      const hasGemma = models.some((m: any) => m.name === 'gemma3:1b');
+      console.log('Checked for gemma3:1b:', hasGemma);
+      return hasGemma;
+    } catch (error) {
+      console.error('Failed to check Ollama models:', error);
+      return false;
+    }
+  }, []);
+
+  // Set up auto-generation - respects DB as source of truth
+  const setupAutoGeneration = useCallback(async () => {
+    if (hasCheckedAutoGen) return; // Only check once
+
+    // Only auto-generate if navigated from recording
+    if (source !== 'recording') {
+      console.log('Not from recording navigation, skipping auto-generation');
+      setHasCheckedAutoGen(true);
+      return;
+    }
+
+    // Respect user's auto-summary toggle preference
+    if (!isAutoSummary) {
+      console.log('Auto-summary is disabled in settings');
+      setHasCheckedAutoGen(true);
+      return;
+    }
+
+    try {
+      // Check what's currently in database
+      const currentConfig = await invoke('api_get_model_config') as any;
+
+      // If DB already has a model, use it (never override!)
+      if (currentConfig && currentConfig.model) {
+        console.log('Using existing model from DB:', currentConfig.model);
+        setShouldAutoGenerate(true);
+        setHasCheckedAutoGen(true);
+        return;
+      }
+
+      // DB is empty - check if gemma3:1b exists as fallback
+      const hasGemma = await checkForGemmaModel();
+
+      if (hasGemma) {
+        console.log('DB empty, using gemma3:1b as initial default');
+
+        await invoke('api_save_model_config', {
+          provider: 'ollama',
+          model: '',
+          whisperModel: 'large-v3',
+          apiKey: null,
+          ollamaEndpoint: null,
+        });
+
+        setShouldAutoGenerate(true);
+      } else {
+        console.log('No model configured and gemma3:1b not found');
+      }
+    } catch (error) {
+      console.error('Failed to setup auto-generation:', error);
+    }
+
+    setHasCheckedAutoGen(true);
+  }, [hasCheckedAutoGen, checkForGemmaModel, source, isAutoSummary]);
+
+  // Sync session metadata from pagination hook to session details state
+  useEffect(() => {
+    if (metadata && (!sessionId || sessionId === 'intro-call')) {
+      // If invalid session ID, don't sync
+      return;
+    }
+
+    if (metadata) {
+      console.log('Session metadata loaded:', metadata);
+
+      // Build session details from metadata and paginated transcripts
+      setSessionDetails({
+        id: metadata.id,
+        title: metadata.title,
+        created_at: metadata.created_at,
+        updated_at: metadata.updated_at,
+        transcripts: transcripts, // Paginated transcripts from hook
+      });
+
+      // Sync with sidebar context
+      setCurrentSession({ id: metadata.id, title: metadata.title });
+    }
+  }, [metadata, transcripts, sessionId, setCurrentSession]);
+
+  // Handle transcript loading errors
+  useEffect(() => {
+    if (transcriptError) {
+      console.error('Error loading transcripts:', transcriptError);
+      setError(transcriptError);
+    }
+  }, [transcriptError]);
+
+  // Extract fetchSessionDetails for use in child components (now refetches via hook)
+  const fetchSessionDetails = useCallback(async () => {
+    if (!sessionId || sessionId === 'intro-call') {
+      return;
+    }
+
+    // The usePaginatedTranscripts hook automatically refetches when sessionId changes
+    // This function is kept for compatibility with onSessionUpdated callback
+    console.log('fetchSessionDetails called - pagination hook will handle refetch');
+  }, [sessionId]);
+
+  // Reset states when sessionId changes (prevent race conditions)
+  useEffect(() => {
+    setSessionDetails(null);
+    setSessionSummary(null);
+    setError(null);
+    setIsLoading(true);
+    // Reset auto-generation state to allow new session to be checked
+    setHasCheckedAutoGen(false);
+    setShouldAutoGenerate(false);
+  }, [sessionId]);
+
+  // Cleanup: Stop polling when navigating away from a session
+  useEffect(() => {
+    return () => {
+      if (sessionId) {
+        console.log('Cleaning up: Stopping summary polling for session:', sessionId);
+        stopSummaryPolling(sessionId);
+      }
+    };
+  }, [sessionId, stopSummaryPolling]);
+
+  useEffect(() => {
+    console.log('SessionDetails useEffect triggered - sessionId:', sessionId);
+
+    if (!sessionId || sessionId === 'intro-call') {
+      console.warn('No valid session ID in URL - sessionId:', sessionId);
+      setError("No session selected");
+      setIsLoading(false);
+      Analytics.trackPageView('session_details');
+      return;
+    }
+
+    console.log('Valid session ID found, fetching details for:', sessionId);
+
+    setSessionDetails(null);
+    setSessionSummary(null);
+    setError(null);
+    setIsLoading(true);
+
+    const fetchSessionSummary = async () => {
+      try {
+        const summary = await invoke('api_get_summary', {
+          meetingId: sessionId,
+        }) as any;
+
+        console.log('FETCH SUMMARY: Raw response:', summary);
+
+        // Check if the summary request failed with 404 or error status, or if no summary exists yet (idle)
+        // Note: 'cancelled' and 'failed' statuses can still have data if backup was restored
+        if (summary.status === 'idle' || (!summary.data && summary.status === 'error')) {
+          console.warn('Session summary not found or no summary generated yet:', summary.error || 'idle');
+          setSessionSummary(null);
+          return;
+        }
+
+        const summaryData = summary.data || {};
+
+        // Parse if it's a JSON string (backend may return double-encoded JSON)
+        let parsedData = summaryData;
+        if (typeof summaryData === 'string') {
+          try {
+            parsedData = JSON.parse(summaryData);
+          } catch (e) {
+            parsedData = {};
+          }
+        }
+
+        console.log('FETCH SUMMARY: Parsed data:', parsedData);
+
+        // Priority 1: BlockNote JSON format
+        if (parsedData.summary_json) {
+          setSessionSummary(parsedData as any);
+          return;
+        }
+
+        // Priority 2: Markdown format
+        if (parsedData.markdown) {
+          setSessionSummary(parsedData as any);
+          return;
+        }
+
+        // Legacy format - apply formatting
+        console.log('LEGACY FORMAT: Detected legacy format, applying section formatting');
+
+        const { MeetingName, SessionName, _section_order, ...restSummaryData } = parsedData;
+
+        // Format the summary data with consistent styling - PRESERVE ORDER
+        const formattedSummary: Summary = {};
+
+        // Use section order if available to maintain exact order and handle duplicates
+        const sectionKeys = _section_order || Object.keys(restSummaryData);
+
+        console.log('LEGACY FORMAT: Processing sections:', sectionKeys);
+
+        for (const key of sectionKeys) {
+          try {
+            const section = restSummaryData[key];
+            // Comprehensive null checks to prevent the error
+            if (section &&
+              typeof section === 'object' &&
+              'title' in section &&
+              'blocks' in section) {
+              const typedSection = section as { title?: string; blocks?: any[] };
+
+              // Ensure blocks is an array before mapping
+              if (Array.isArray(typedSection.blocks)) {
+                formattedSummary[key] = {
+                  title: typedSection.title || key,
+                  blocks: typedSection.blocks.map((block: any) => ({
+                    ...block,
+                    // type: 'bullet',
+                    color: 'default',
+                    content: block?.content?.trim() || ''
+                  }))
+                };
+              } else {
+                // Handle case where blocks is not an array
+                console.warn(`LEGACY FORMAT: Section ${key} has invalid blocks:`, typedSection.blocks);
+                formattedSummary[key] = {
+                  title: typedSection.title || key,
+                  blocks: []
+                };
+              }
+            } else {
+              console.warn(`LEGACY FORMAT: Skipping invalid section ${key}:`, section);
+            }
+          } catch (error) {
+            console.warn(`LEGACY FORMAT: Error processing section ${key}:`, error);
+            // Continue processing other sections
+          }
+        }
+
+        console.log('LEGACY FORMAT: Formatted summary:', formattedSummary);
+        setSessionSummary(formattedSummary);
+      } catch (error) {
+        console.error('FETCH SUMMARY: Error fetching session summary:', error);
+        // Don't set error state for summary fetch failure, set to null to show generate button
+        setSessionSummary(null);
+      }
+    };
+
+    const loadData = async () => {
+      try {
+        await fetchSessionSummary();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [sessionId]);
+
+  // Auto-generation check: runs when session is loaded with no summary
+  useEffect(() => {
+    const checkAutoGen = async () => {
+      // Only auto-generate if:
+      // 1. We have session details
+      // 2. No summary exists
+      // 3. Session has transcripts
+      // 4. Haven't checked yet
+      if (
+        sessionDetails &&
+        sessionSummary === null &&
+        sessionDetails.transcripts &&
+        sessionDetails.transcripts.length > 0 &&
+        !hasCheckedAutoGen
+      ) {
+        console.log('No summary found, checking for auto-generation...');
+        await setupAutoGeneration();
+      }
+    };
+
+    checkAutoGen();
+  }, [sessionDetails, sessionSummary, hasCheckedAutoGen, setupAutoGeneration]);
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button
+            onClick={() => router.push('/')}
+            className="px-4 py-2 bg-uchitil-pink text-gray-800 rounded hover:bg-uchitil-pink/90"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading spinner while initial data loads
+  if ((isLoading || isLoadingTranscripts) || !sessionDetails) {
+    return <div className="flex items-center justify-center h-screen">
+      <LoaderIcon className="animate-spin size-6 " />
+    </div>;
+  }
+
+  return <PageContent
+    meeting={sessionDetails}
+    summaryData={sessionSummary}
+    shouldAutoGenerate={shouldAutoGenerate}
+    onAutoGenerateComplete={() => setShouldAutoGenerate(false)}
+    onSessionUpdated={async () => {
+      // Refetch session details to get updated title from backend
+      await fetchSessionDetails();
+      // Refetch sessions list to update sidebar
+      await refetchSessions();
+    }}
+    // Pagination props for efficient transcript loading
+    segments={segments}
+    hasMore={hasMore}
+    isLoadingMore={isLoadingMore}
+    totalCount={totalCount}
+    loadedCount={loadedCount}
+    onLoadMore={loadMore}
+  />;
+}
+
+export default function SessionDetails() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-screen">
+        <LoaderIcon className="animate-spin size-6" />
+      </div>
+    }>
+      <SessionDetailsContent />
+    </Suspense>
+  );
+}
